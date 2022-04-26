@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuhelan.dotchat.dao.UserDao">
+
+    <insert id="register_user_by_userphone_and_username">
+        insert into dotchat_user(user_phonenumber, user_name, user_password)
+        values (#{user_phonenumber}, #{user_name}, #{user_password})
+    </insert>
+
+    <insert id="register_from_website">
+        insert into dotchat_user(user_name, user_phonenumber, user_email, user_password)
+        values (#{user_name}, #{user_phonenumber}, #{user_email}, #{user_password})
+    </insert>
+
+    <select id="select_user_by_email_and_password" resultType="com.chuhelan.dotchat.beans.User">
+        select *
+        from dotchat_user
+        where user_name = (#{user_name})
+          and user_password = (#{user_password})
+    </select>
+
+    <select id="get_user_by_mail" resultType="com.chuhelan.dotchat.beans.User">
+        select *
+        from dotchat_user
+        where user_email = (#{user_email})
+    </select>
+    <select id="get_user_by_id" resultType="com.chuhelan.dotchat.beans.User">
+        select *
+        from dotchat_user
+        where user_id = (#{user_id})
+    </select>
+
+    <update id="save_user_token_by_id">
+        update dotchat_user
+        set user_session=#{token}
+        where user_id = #{id}
+    </update>
+    <update id="save_user_token_die_time_by_id">
+        update dotchat_user
+        set user_diesession_time=#{date}
+        where user_id = #{id}
+    </update>
+
+    <insert id="set_userinfo_by_userid">
+        insert into dotchat_user_info (user_id)
+        values (#{id});
+    </insert>
+
+</mapper> 

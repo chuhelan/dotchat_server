@@ -1,0 +1,23 @@
+{
+  "name": "dotchat_web",
+  "version": "1.0.0",
+  "description": "Chat online on your personal computer, or chat on your iPhone, maybe iPad on Safari. BTW enjoy your time here! :tada:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chuhelan/dotchat_web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chuhelan/dotchat_web/issues"
+  },
+  "homepage": "https://github.com/chuhelan/dotchat_web#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.0.24"
+  }
+}
