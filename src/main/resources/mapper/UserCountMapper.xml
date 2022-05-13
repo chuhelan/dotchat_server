@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuhelan.dotchat.dao.UserCountDao">
+    <insert id="add_user_by_id">
+        INSERT INTO dotchat_user_count(user_id)
+        VALUES (#{user_id})
+    </insert>
+
+
+    <update id="user_post_count_plus_1">
+        update dotchat_user_count
+        set user_post_count =user_post_count + 1
+        where user_id = (#{user_id})
+    </update>
+
+    <update id="user_post_count_minus_1">
+        update dotchat_user_count
+        set user_post_count =user_post_count - 1
+        where user_id = (#{user_id})
+    </update>
+
+    <select id="get_user_count_by_id" resultType="com.chuhelan.dotchat.beans.UserCount">
+        select *
+        from dotchat_user_count
+        where user_id = (#{user_id})
+    </select>
+</mapper>

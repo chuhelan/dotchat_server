@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuhelan.dotchat.dao.PostDao">
+    <insert id="insert_post">
+        insert into dotchat_post(post_author, post_date, post_content, post_image_url)
+        VALUES (#{post_author}, now(), #{post_content}, #{post_image_url})
+    </insert>
+
+    <select id="show_post_from_post_author" resultType="com.chuhelan.dotchat.beans.PostInfo">
+        select *
+        from dotchat_post
+        where post_author = (#{post_author})
+    </select>
+</mapper>

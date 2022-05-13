@@ -27,6 +27,10 @@ public interface UserDao {
 
     User get_user_by_id(int id);
 
+    UserInfo get_userinfo_by_id(int id);
+
+    int set_userinfo_by_id_and_name(int user_id, String user_name);
+
 
     //    设置用户的token
     int save_user_token_by_id(int id, String token);
@@ -36,4 +40,27 @@ public interface UserDao {
 
     //
     int set_userinfo_by_userid(int id);
+
+    int update_password(String user_password, int user_id);
+
+    int update_userinfo(int user_id, String user_name, String user_gender, String user_profile, String user_location);
+
+    int update_username_by_id(int user_id, String user_name);
+
+    int select_user_by_username(String user_name);
+
+    UserInfo[] select_latest_userinfo_not_in_cookie_userid(int user_id);
+
+    int do_follow_and_count_plus(int user_id, int follow_id);
+
+    //    自己id下 关注者数量+1
+    int do_user_id_count_follows_plus(int user_id);
+
+    //    关注者id下 粉丝数量+1
+    int do_follower_id_count_followers_plus(int follow_id);
+
+    //    利用post查找user_info信息
+    UserInfo[] select_all_follows(int user_id);
+
+    UserInfo[] select_all_followers(int user_id);
 }

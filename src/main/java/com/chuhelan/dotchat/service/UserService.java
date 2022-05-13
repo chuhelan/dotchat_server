@@ -1,6 +1,7 @@
 package com.chuhelan.dotchat.service;
 
 import com.chuhelan.dotchat.beans.User;
+import com.chuhelan.dotchat.beans.UserInfo;
 
 /**
  * @author chuhelan
@@ -13,9 +14,30 @@ public interface UserService {
 
     int register_from_website(User u);
 
+    //    注册用户信息 顺便填充user_info信息
+    int set_userinfo_by_id_and_name(int user_id, String user_name);
+
     boolean verify_token_by_id(int id, String token);
 
     String login_user_by_mail(String user_email, String user_password);
 
     User get_user_by_mail(String user_email);
+
+    User get_user_by_id(int id);
+
+    UserInfo get_userinfo_by_id(int id);
+
+    String update_password(String user_password, int user_id);
+
+    String update_userinfo(int user_id, String user_name, String user_gender, String user_profile, String user_location);
+
+    int select_user_by_username(String user_name);
+
+    UserInfo[] select_latest_userinfo_not_in_cookie_userid(int user_id);
+
+    String do_follow_and_count_plus(int user_id,int follow_id);
+
+    UserInfo[] select_all_follows(int user_id);
+
+    UserInfo[] select_all_followers(int user_id);
 }

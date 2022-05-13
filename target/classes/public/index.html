@@ -8,10 +8,11 @@
   <title>dotchat 中文官网</title>
   <link href="./css/style.css" rel="stylesheet" />
 </head>
+<script src="js/basic_function.js"></script>
 
 <body>
   <!-- banner -->
-  <div class="bg-white pb-6 sm:pb-8 lg:pb-12">
+  <div class="bg-white pb-6 sm:pb-8 lg:pb-12" id="full_banner">
     <!-- banner - start -->
     <div
       class="flex flex-wrap sm:flex-nowrap sm:justify-center sm:items-center bg-indigo-500 relative sm:gap-3 px-4 sm:pr-8 ms:px-8 py-3">
@@ -27,8 +28,8 @@
       <div
         class="order-2 sm:order-none w-1/12 sm:w-auto flex justify-end items-start sm:absolute sm:right-0 sm:mr-1 xl:mr-3">
         <button type="button" class="text-white hover:text-indigo-100 active:text-indigo-200 transition duration-100">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 md:w-6 h-5 md:h-6" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 md:w-6 h-5 md:h-6" fill="none" id="top_banner"
+            onclick="close_top_banner()" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -55,6 +56,8 @@
           <a href="/" class="text-indigo-500 text-lg font-semibold">首页</a>
           <a href="/login.html"
             class="text-gray-600 hover:text-indigo-500 active:text-indigo-700 text-lg font-semibold transition duration-100">登录</a>
+          <a href="/home/index.html"
+            class="text-gray-600 hover:text-indigo-500 active:text-indigo-700 text-lg font-semibold transition duration-100">首页</a>
           <a href="/support"
             class="text-gray-600 hover:text-indigo-500 active:text-indigo-700 text-lg font-semibold transition duration-100">支持</a>
           <a href="/contact"
@@ -138,7 +141,7 @@
             dotchat打造了高效的即时通讯服务，在dotchat上您能与您的好友畅所欲言，分享趣事。还有更多新鲜功能等您发掘！
           </p>
 
-          <a href="#"
+          <a href="/login.html"
             class="inline-block bg-red-500 hover:bg-red-600 active:bg-indigo-700 focus-visible:ring ring-indigo-300 text-white text-sm md:text-base font-semibold text-center rounded-lg outline-none transition duration-100 px-8 py-3">立即登录
           </a>
 
@@ -502,7 +505,6 @@
       </div>
     </div>
   </footer>
-
 
 </body>
 

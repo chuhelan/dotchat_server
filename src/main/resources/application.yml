@@ -1,6 +1,16 @@
 server:
   port: 8888
 spring:
+  mail:
+    host: smtp.exmail.qq.com
+    username: service@chuhelan.com
+    password: Qqchl231316
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
   datasource:
     # 数据源基本配置
     username: dotchat_chuhelan

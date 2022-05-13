@@ -15,7 +15,7 @@ public class UserInfo {
     private String user_gender;
     private String user_profile;
     private String user_location;
-    private String user_point;
-    private String user_authentication;
-    private String user_state;
+    private int user_point;
+    private int user_authentication;
+    private int user_state;
 }
