@@ -63,4 +63,6 @@ public interface UserDao {
     UserInfo[] select_all_follows(int user_id);
 
     UserInfo[] select_all_followers(int user_id);
+
+    User select_user_email_and_user_name_by_userid(int user_id);
 }

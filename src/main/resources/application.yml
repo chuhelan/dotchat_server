@@ -1,10 +1,10 @@
 server:
-  port: 8888
+  port: 997
 spring:
   mail:
     host: smtp.exmail.qq.com
     username: service@chuhelan.com
-    password: Qqchl231316
+    password: Wmpszdsb2022
     default-encoding: utf-8
     properties:
       mail:
@@ -19,6 +19,10 @@ spring:
     url: jdbc:mysql://dotchat.chuhelan.com:3306/dotchat_chuhelan?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
   thymeleaf:
     prefix: classpath:/templates/
+    mode: utf-8
+    servlet:
+      content-type: text/html
+    cache: false
 mybatis:
   type-aliases-package: com.chuhelan.dotchat.beans #所有Entity别名类所在包
   mapper-locations: [ classpath:mapper/**/*.xml ]

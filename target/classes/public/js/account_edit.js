@@ -23,6 +23,8 @@ if (save.indexOf('&') > 0) {
 console.log("id=" + id)
 
 set_pageinfo();
+set_email_name();
+
 let online_image
 
 function set_pageinfo() {
@@ -57,6 +59,35 @@ function set_pageinfo() {
         }).catch(console.error)
 }
 
+
+let out_sendname
+let out_sendto
+let out_subject = "密码已被修改!"
+let out_content = "尊敬的" + out_sendname + "您好:您已为登录邮箱为" + out_sendto + "的账户重置密码。本邮件由系统自动发送，请勿回复。"
+
+function set_email_name(){
+    fetch("/email_name?user_id=" + id)
+    .then(Response => Response.json())
+    .then(data => {
+        console.log(data)
+        console.log("这是email信息")
+        out_sendname = data.user_name
+        out_sendto = data.user_email
+        out_content = "尊敬的" + out_sendname + "您好:您已为登录邮箱为" + out_sendto + "的账户重置密码。本邮件由系统自动发送，请勿回复。"
+    }).catch(console.error)
+}
+
+
+function send_mail() {
+    fetch("/mail/sendTextMail?to=" + out_sendto + "&subject=" + out_subject + "&content=" + out_content)
+        .then(Response => Response.json())
+        .then(data => {
+            console.log(data)
+            alert("邮件正常发送！")
+        }).catch(console.error)
+
+}
+
 function update_password() {
     var password_radio_state = document.getElementById("password_radio_state").checked
     console.log(password_radio_state)
@@ -68,8 +99,8 @@ function update_password() {
                 .then(Response => Response.json())
                 .then(data => {
                     if (data.code === 200) {
+                        send_mail()
                         window.location.replace("/login.html")
-                        alert("密码修改成功！")
                     }
                 })
         } else {
@@ -79,6 +110,7 @@ function update_password() {
         alert("请选中\"我同意\"！")
     }
 }
+
 
 
 // https://image.chuhelan.com/api/v1/upload 接口返回url填入user_gender

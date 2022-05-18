@@ -356,10 +356,10 @@
           </div>
 
           <form class="w-full md:max-w-md flex gap-2">
-            <input placeholder="电子邮件地址"
+            <input placeholder="电子邮件地址" id="send_mail_input" type="email"
               class="w-full flex-1 bg-indigo-400 text-white placeholder-indigo-100 border border-white focus:ring ring-indigo-300 rounded outline-none transition duration-100 px-3 py-2" />
 
-            <button
+            <button onclick="send_mail_button();return false;"
               class="inline-block bg-white hover:bg-gray-100 focus-visible:ring ring-indigo-300 text-indigo-500 active:text-indigo-600 text-sm md:text-base font-semibold text-center rounded outline-none transition duration-100 px-8 py-2">发送</button>
           </form>
         </div>

@@ -111,6 +111,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User select_user_email_and_user_name_by_userid(int user_id) {
+        return userDao.select_user_email_and_user_name_by_userid(user_id);
+    }
+
+    @Override
     public String login_user_by_mail(String user_email, String user_password) {
         // 获取用户信息
         User info = userDao.get_user_by_mail(user_email);

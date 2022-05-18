@@ -19,3 +19,22 @@ function signout_account() {
     window.location.replace("/login.html")
 }
 
+//发送邮件
+
+function send_mail_button() {
+    var mail_address = document.getElementById("send_mail_input").value
+
+    // 先发邮件
+    fetch("/mail/sendTextMail?to=" + mail_address + "&subject=感谢订阅!&content=感谢您的订阅！您的信息已经提交至服务器，您将会收到我们的更新提醒！该邮件由系统自动发送！")
+        .then(Response => Response.json())
+    // 再写数据库
+    fetch("/send_mail?mail_address=" + mail_address)
+        .then(Response => Response.json())
+        .then(data => {
+            if (data.code == 200) {
+                alert("订阅成功！感谢订阅！")
+            }
+        }).catch(console.error)
+
+}
+

@@ -2,10 +2,7 @@ package com.chuhelan.dotchat.controller;
 
 import com.chuhelan.dotchat.beans.User;
 import com.chuhelan.dotchat.beans.UserInfo;
-import com.chuhelan.dotchat.model.Base;
-import com.chuhelan.dotchat.model.BaseId;
-import com.chuhelan.dotchat.model.BaseInfo;
-import com.chuhelan.dotchat.model.BaseMessage;
+import com.chuhelan.dotchat.model.*;
 import com.chuhelan.dotchat.service.UserService;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.google.gson.Gson;
@@ -187,6 +184,14 @@ public class UserController {
     public String select_all_followers(int user_id) {
         UserInfo[] userInfo = userService.select_all_followers(user_id);
         return gson.toJson(userInfo);
+    }
+
+    //用id查找该id所属的邮箱地址和昵称用于发送邮件服务
+    @GetMapping("/email_name")
+    public String select_user_email_and_user_name_by_userid(int user_id) {
+        User user = userService.select_user_email_and_user_name_by_userid(user_id);
+        MailBack mailBack = new MailBack(user.getUser_email(), user.getUser_name());
+        return gson.toJson(mailBack);
     }
 
 }

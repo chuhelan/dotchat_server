@@ -64,6 +64,11 @@
         FROM dotchat_user_info
         WHERE user_id = ANY (SELECT user_id FROM dotchat_follow WHERE follow_id = (#{user_id}))
     </select>
+    <select id="select_user_email_and_user_name_by_userid" resultType="com.chuhelan.dotchat.beans.User">
+        SELECT user_name, user_email
+        FROM dotchat_user
+        WHERE user_id = (#{user_id})
+    </select>
 
     <update id="save_user_token_by_id">
         update dotchat_user

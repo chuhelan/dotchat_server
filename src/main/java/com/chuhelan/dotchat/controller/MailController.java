@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.TemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -30,52 +31,61 @@ public class MailController {
     @Value("${spring.mail.username}")  //发送人的邮箱
     private String from;
 
+    @Autowired
+    TemplateEngine templateEngine;//模板引擎 用于生成thymeleaf模板渲染
 
     /**
      * 普通文本邮件发送
-     * @param to 发给谁  对方邮箱
+     *
+     * @param to      发给谁  对方邮箱
      * @param subject 标题  测试邮件
      * @param content 内容
      * @return
      */
     @RequestMapping("/sendTextMail")
-    public String sendTextMail(String to, String subject, String content){
+    public String sendTextMail(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
+        System.out.println("============邮件发送==============");
+        System.out.println(to);
+        System.out.println(subject);
+        System.out.println(content);
+        System.out.println("============邮件发送==============");
         try {
             mailSender.send(message);//发送
             System.out.println("测试邮件已发送。");
         } catch (Exception e) {
             System.out.println("发送邮件时发生异常了！");
-            return "邮件发送失败："+e;
+            return "邮件发送失败：" + e;
         }
         return "邮件发送成功";
     }
 
     /**
      * 发送HTML邮件
-     * @param to 发给谁  对方邮箱
+     *
+     * @param to      发给谁  对方邮箱
      * @param subject 标题  测试邮件
      * @param content 内容
      * @return
      */
     @RequestMapping("/sendHtmlMail")
-    public String sendHtmlMail(String to,String subject,String content){
-        MimeMessage mimeMessage=mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper= null;
+    public String sendHtmlMail(String to, String subject, String content) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
         try {
-            mimeMessageHelper = new MimeMessageHelper(mimeMessage,true);
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(content,true);//发送HTML内容时需要设置html开启,默认为false
+            mimeMessageHelper.setText(content, true);//发送HTML内容时需要设置html开启,默认为false
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             e.printStackTrace();
-            return "邮件发送失败："+e;
+            return "邮件发送失败：" + e;
         }
         return "邮件发送成功";
     }
@@ -83,29 +93,30 @@ public class MailController {
 
     /**
      * 发送附件邮件
-     * @param to 发给谁  对方邮箱
-     * @param subject 标题  测试邮件
-     * @param content 内容
+     *
+     * @param to       发给谁  对方邮箱
+     * @param subject  标题  测试邮件
+     * @param content  内容
      * @param filePath 文件路径
      * @return
      */
     @RequestMapping("/sendAttachmentMail")
-    public String sendAttachmentMail(String to,String subject,String content,String filePath){
-        MimeMessage mimeMessage=mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper= null;
+    public String sendAttachmentMail(String to, String subject, String content, String filePath) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = null;
         try {
-            mimeMessageHelper = new MimeMessageHelper(mimeMessage,true);//需要开启邮件附件
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);//需要开启邮件附件
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(content,true);
-            FileSystemResource fileSystemResource=new FileSystemResource(new File(filePath));
-            String fileName=fileSystemResource.getFilename();
-            mimeMessageHelper.addAttachment(fileName,fileSystemResource);//添加附件
+            mimeMessageHelper.setText(content, true);
+            FileSystemResource fileSystemResource = new FileSystemResource(new File(filePath));
+            String fileName = fileSystemResource.getFilename();
+            mimeMessageHelper.addAttachment(fileName, fileSystemResource);//添加附件
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             e.printStackTrace();
-            return "邮件发送失败："+e;
+            return "邮件发送失败：" + e;
         }
         return "邮件发送成功";
     }

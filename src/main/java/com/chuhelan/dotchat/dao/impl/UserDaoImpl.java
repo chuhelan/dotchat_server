@@ -113,4 +113,10 @@ public class UserDaoImpl implements UserDao {
         return new UserInfo[0];
     }
 
+    @Override
+    public User select_user_email_and_user_name_by_userid(int user_id) {
+        return null;
+    }
+
+
 }
