@@ -84,7 +84,7 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public String login_user_by_mail(ModelAndView modelAndView, String user_email, String user_password) {
+    public String login_user_by_mail(String user_email, String user_password) {
         String back = "未知错误";
         int code = 500;
         // 验证登录
@@ -102,6 +102,30 @@ public class UserController {
                 if (login_statue.length() > 3) {
                     code = 200;
                     back = login_statue + "|" + userService.get_user_by_mail(user_email).getUser_id();
+                }
+        }
+        return gson.toJson(new BaseMessage(code, back));
+    }
+
+    @GetMapping("/login_phone")
+    public String login_user_by_phone(String user_phone, String user_password) {
+        String back = "未知错误";
+        int code = 500;
+        // 验证登录
+        String login_statue = userService.login_user_by_phone(user_phone, user_password);
+        switch (login_statue) {
+            case "404":
+                code = Integer.parseInt(login_statue);
+                back = "账号不存在";
+                break;
+            case "302":
+                code = Integer.parseInt(login_statue);
+                back = "账号或密码错误";
+                break;
+            default:
+                if (login_statue.length() > 3) {
+                    code = 200;
+                    back = login_statue + "|" + userService.get_user_by_phone(user_phone).getUser_id();
                 }
         }
         return gson.toJson(new BaseMessage(code, back));
@@ -192,6 +216,40 @@ public class UserController {
         User user = userService.select_user_email_and_user_name_by_userid(user_id);
         MailBack mailBack = new MailBack(user.getUser_email(), user.getUser_name());
         return gson.toJson(mailBack);
+    }
+
+    //取消关注 关注者count-1 被取消的人 粉丝数量-1
+    @GetMapping("/cancel_follow")
+    public String cancel_follow_by_user_id(int mine_id, int its_id) {
+        String code = userService.cancel_follow_by_user_id(mine_id, its_id);
+        switch (code) {
+            case "200":
+                return gson.toJson(new BaseMessage(200, "取消关注成功！"));
+            default:
+                return gson.toJson(new BaseMessage(500, "出现错误！"));
+        }
+
+    }
+
+    //查找用户接口
+    @GetMapping("/s")
+    public String search_user_name_by_key_words(String wd){
+        UserInfo[] userInfos = userService.search_user_name_by_key_words(wd);
+        return gson.toJson(userInfos);
+    }
+
+    //查找该用户下的所有关注者 follows 关注者
+    @GetMapping("/fow")
+    public String get_all_follows_by_user_id(int user_id){
+        UserInfo[] userInfos = userService.get_all_follows_by_user_id(user_id);
+        return gson.toJson(userInfos);
+    }
+
+    //查找该用户下的所有粉丝 followers 粉丝
+    @GetMapping("/fower")
+    public String get_all_followers_by_user_id(int user_id){
+        UserInfo[] userInfos = userService.get_all_followers_by_user_id(user_id);
+        return gson.toJson(userInfos);
     }
 
 }

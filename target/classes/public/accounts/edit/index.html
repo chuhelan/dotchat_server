@@ -12,7 +12,23 @@
 
 <script src="/js/basic_function.js"></script>
 <script src="/js/account_edit.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+<script src="/js/alpine.min.js" defer></script>
+
+<style>
+    .search-div {
+        position: absolute;
+        min-height: 30px;
+        max-height: 30vh;
+        top: 70px;
+        width: 120%;
+        left: -10%;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform .3s;
+        overflow-y: scroll;
+        z-index: 1;
+    }
+</style>
 
 <body>
     <!-- banner -->
@@ -64,7 +80,8 @@
             <!-- search bar -->
             <!-- <div class="hidden sm:block flex-shrink flex-grow-0 justify-start px-2"> -->
             <div class="relative hidden sm:block flex-shrink flex-grow-0">
-                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full"
+                <div class="bg-white shadow rounded-lg mb-6 search-div"></div>
+                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full" oninput="loadSearch(this)"
                     placeholder="试着找点什么..." style="min-width:400px;">
                 <div class="absolute top-0 right-0 p-4 pr-3 text-purple-lighter">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -201,7 +218,7 @@
                                 required="">
                             <label for="remember" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-400">我同意
                                 <a href="#"
-                                    class="text-blue-600 hover:underline dark:text-blue-500">dochat隐私政策</a>。</label>
+                                    class="text-blue-600 hover:underline dark:text-blue-500">dotchat隐私政策</a>。</label>
                         </div>
 
                         <button type="submit" onclick="update_userinfo();return false;"
@@ -245,7 +262,7 @@
                                 required="">
                             <label for="remember" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-400">我同意
                                 <a href="#"
-                                    class="text-blue-600 hover:underline dark:text-blue-500">dochat隐私政策</a>。</label>
+                                    class="text-blue-600 hover:underline dark:text-blue-500">dotchat隐私政策</a>。</label>
                         </div>
 
                         <button type="submit" onclick="update_password();return false;"

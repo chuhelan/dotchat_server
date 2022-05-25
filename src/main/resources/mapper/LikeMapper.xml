@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuhelan.dotchat.dao.LikeDao">
+
+    <insert id="like_post_from_post_id">
+        insert into dotchat_post_like (like_user_id, like_user_name, like_parent)
+        values (#{user_id}, (select user_name from dotchat_user_info where user_id = #{user_id}), #{post_id});
+    </insert>
+
+    <delete id="dislike_post_from_post_id">
+        delete
+        from dotchat_post_like
+        where like_user_id = #{user_id}
+          and like_parent = #{post_id}
+    </delete>
+
+    <select id="is_liked_from_user_id_and_post_id" resultType="com.chuhelan.dotchat.beans.Like">
+        select *
+        from dotchat_post_like
+        where like_user_id = #{user_id}
+          and like_parent = #{post_id}
+    </select>
+</mapper>

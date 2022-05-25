@@ -10,8 +10,61 @@
 </head>
 
 <script src="../js/basic_function.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-<script src="../js/account.js"></script>
+<script src="/js/alpine.min.js" defer></script>
+<script src="/js/clipboard.min.js"></script>
+
+<style>
+    .close-btn {
+        color: rgb(156 163 175 / var(--tw-text-opacity));
+        background: rgb(243 244 246 / var(--tw-bg-opacity));
+        padding: 7px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        align-self: center;
+        transition: opacity .3s;
+        cursor: pointer;
+    }
+    .close-btn:hover {
+        opacity: 0.5;
+    }
+
+    .pop-body {
+        transition: opacity .3s;
+        display: none;
+        position: absolute;
+        background-color: rgb(243 244 246 / 0.6);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+    }
+    .pop-body > div {
+        width: 40%;
+        padding: 20px;
+        min-height: 30vh;
+        max-height: 80vh;
+        margin-left: 50%;
+        margin-top: 10vh;
+        transform: translate(-50%);
+        overflow-y: scroll;
+    }
+
+    .search-div {
+        position: absolute;
+        min-height: 30px;
+        max-height: 30vh;
+        top: 70px;
+        width: 120%;
+        left: -10%;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform .3s;
+        overflow-y: scroll;
+        z-index: 1;
+    }
+</style>
 
 <body>
     <!-- banner -->
@@ -63,7 +116,8 @@
             <!-- search bar -->
             <!-- <div class="hidden sm:block flex-shrink flex-grow-0 justify-start px-2"> -->
             <div class="relative hidden sm:block flex-shrink flex-grow-0">
-                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full"
+                <div class="bg-white shadow rounded-lg mb-6 search-div"></div>
+                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full" oninput="loadSearch(this)"
                     placeholder="试着找点什么..." style="min-width:400px;">
                 <div class="absolute top-0 right-0 p-4 pr-3 text-purple-lighter">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -157,11 +211,11 @@
                             <p id="post_count" class="text-black">102</p>
                             <span  class="text-gray-400">帖子</span>
                         </div>
-                        <div class="font-semibold text-center mx-4">
+                        <div class="font-semibold text-center mx-4" style="cursor: pointer;" onclick="loadFollowers(pageid)">
                             <p id="followers_count" class="text-black">102</p>
                             <span class="text-gray-400">粉丝</span>
                         </div>
-                        <div class="font-semibold text-center mx-4">
+                        <div class="font-semibold text-center mx-4" style="cursor: pointer;" onclick="loadFollows(pageid)">
                             <p id="follows_count" class="text-black">102</p>
                             <span class="text-gray-400">关注</span>
                         </div>
@@ -170,9 +224,9 @@
                     <!-- 设置账号 -->
                     <div class="text-center justify-center flex place-self-center mt-8 space-x-3 ">
 
-                        <button id="follow_button"
+                        <button onclick="followUser()" id="follow_button"
                             class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
-                            <span
+                            <span id="follow_button_text"
                                 class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                 关注
                             </span>
@@ -182,12 +236,13 @@
                             class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-600 dark:focus:ring-blue-800">
                             修改资料
                         </button>
-                        <div class="cursor-pointer ">
+                        <div class="cursor-pointer" onmouseover="showQRCode(true)" onmouseleave="showQRCode(false)">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg" width="42">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                     d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                             </svg>
+                            <div id="qrcode" class="shadow" style="display: none;opacity: 0;transition: opacity .3s;background-color: rgb(243 244 246 / var(--tw-bg-opacity));padding: 20px;position: absolute;border-radius: 7px;width: 150px;margin-top: -210px;margin-left: calc(-150px / 2 + 25px);"></div>
                         </div>
 
                     </div>
@@ -195,101 +250,19 @@
 
                 </div>
 
-                <div class="bg-white shadow mt-6  rounded-lg p-6">
+                <div class="bg-white shadow mt-6  rounded-lg p-6 mb-6">
                     <h3 class="text-gray-600 text-sm font-semibold mb-4">正在关注</h3>
-                    <ul class="flex items-center justify-center space-x-2">
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638612913771-8f00622b96fb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Sage
-                            </span>
-                        </li>
-
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638649602320-450b717fa622?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Jett
-                            </span>
-                        </li>
-
-                        <!-- Story #2 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638708644743-2502f38000a0?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Sky
-                            </span>
-                        </li>
-
-                        <!-- Story #3 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638691899851-0e955bceba1f?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Olivia
-                            </span>
-                        </li>
-
-                        <!-- Story #4 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638612913771-8f00622b96fb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Julia
-                            </span>
-                        </li>
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638649602320-450b717fa622?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Hendrick
-                            </span>
-                        </li>
-
-                    </ul>
+                    <ul id="follows_list" class="flex items-center justify-center space-x-2"></ul>
                 </div>
+
+                <!-- 发送的文章 -->
+                <div id="post-list"></div>
             </aside>
         </main>
+
+        <div class="pop-body" id="pop-main">
+            <div class="bg-white shadow rounded-lg mb-6"></div>
+        </div>
 
         <!-- footer -->
 
@@ -437,6 +410,10 @@
                 </div>
             </div>
         </footer>
+
+<!-- QRCode 生成 js -->
+<script src="../js/qrcode.min.js"></script>
+<script src="../js/account.js"></script>
 
 </body>
 

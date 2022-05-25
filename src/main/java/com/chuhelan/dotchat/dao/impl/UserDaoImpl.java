@@ -34,6 +34,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User get_user_by_phone(String user_phone) {
+        return null;
+    }
+
+    @Override
     public User get_user_by_id(int id) {
         return null;
     }
@@ -116,6 +121,26 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User select_user_email_and_user_name_by_userid(int user_id) {
         return null;
+    }
+
+    @Override
+    public int cancel_follow_by_user_id(int mine_id, int its_id) {
+        return 0;
+    }
+
+    @Override
+    public UserInfo[] search_user_name_by_key_words(String wd) {
+        return new UserInfo[0];
+    }
+
+    @Override
+    public UserInfo[] get_all_follows_by_user_id(int user_id) {
+        return new UserInfo[0];
+    }
+
+    @Override
+    public UserInfo[] get_all_followers_by_user_id(int user_id) {
+        return new UserInfo[0];
     }
 
 

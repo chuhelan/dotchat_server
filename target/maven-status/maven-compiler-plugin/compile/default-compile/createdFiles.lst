@@ -2,6 +2,7 @@ com\chuhelan\dotchat\model\PostBack.class
 com\chuhelan\dotchat\beans\User.class
 com\chuhelan\dotchat\dao\PostDao.class
 com\chuhelan\dotchat\controller\PostController.class
+com\chuhelan\dotchat\controller\LikeController.class
 com\chuhelan\dotchat\dao\impl\UserCountDaoImpl.class
 com\chuhelan\dotchat\beans\UserCount.class
 com\chuhelan\dotchat\controller\MailController.class
@@ -12,7 +13,9 @@ com\chuhelan\dotchat\controller\MailPlusController.class
 com\chuhelan\dotchat\util\convertBlobToString.class
 com\chuhelan\dotchat\controller\UserCountController.class
 com\chuhelan\dotchat\beans\Mail.class
+com\chuhelan\dotchat\service\impl\LikeServiceImpl.class
 com\chuhelan\dotchat\dao\impl\PostDaoImpl.class
+com\chuhelan\dotchat\dao\LikeDao.class
 com\chuhelan\dotchat\dao\UserDao.class
 com\chuhelan\dotchat\start_dotchat.class
 com\chuhelan\dotchat\dao\impl\MailPlusDaoImpl.class
@@ -21,15 +24,19 @@ com\chuhelan\dotchat\service\UserService.class
 com\chuhelan\dotchat\service\impl\UserServiceImpl.class
 com\chuhelan\dotchat\model\BaseMessage.class
 com\chuhelan\dotchat\model\BaseInfo.class
+com\chuhelan\dotchat\beans\Comment.class
 com\chuhelan\dotchat\service\impl\UserCountServiceImpl.class
 com\chuhelan\dotchat\dao\impl\UserDaoImpl.class
 com\chuhelan\dotchat\beans\UserInfo.class
 com\chuhelan\dotchat\service\UserCountService.class
+com\chuhelan\dotchat\service\LikeService.class
 com\chuhelan\dotchat\service\MailPlusService.class
+com\chuhelan\dotchat\beans\Like.class
 com\chuhelan\dotchat\model\BaseId.class
 com\chuhelan\dotchat\service\PostService.class
 com\chuhelan\dotchat\service\impl\MailPlusServiceImpl.class
 com\chuhelan\dotchat\service\impl\PostServiceImpl.class
 com\chuhelan\dotchat\model\UserCountInfo.class
+com\chuhelan\dotchat\dao\impl\LikeDaoImpl.class
 com\chuhelan\dotchat\dao\MailPlusDao.class
 com\chuhelan\dotchat\controller\UserController.class

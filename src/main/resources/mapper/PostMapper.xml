@@ -8,9 +8,112 @@
         VALUES (#{post_author}, now(), #{post_content}, #{post_image_url})
     </insert>
 
+    <delete id="delete_post_by_post_id">
+        delete
+        from dotchat_post
+        where post_id = #{post_id}
+    </delete>
+
+    <delete id="delete_comment_by_post_id_if_exists">
+        delete
+        from dotchat_comment
+        where comment_parent = #{post_id}
+    </delete>
+
+    <delete id="delete_comment_by_comment_id">
+        delete
+        from dotchat_comment
+        where comment_id = #{comment_id}
+    </delete>
+
+    <update id="update_user_count_by_post_author_minus_one">
+        update dotchat_user_count
+        set user_post_count = user_post_count - 1
+        where user_id = (select post_author from dotchat_post where post_id = #{post_id})
+    </update>
+
     <select id="show_post_from_post_author" resultType="com.chuhelan.dotchat.beans.PostInfo">
         select *
         from dotchat_post
         where post_author = (#{post_author})
+        order by post_date desc
+        limit #{start}, 5
     </select>
+
+    <select id="show_all_post" resultType="com.chuhelan.dotchat.beans.PostInfo">
+        select *
+        from dotchat_post
+        order by post_date desc
+        limit #{start}, 10
+    </select>
+
+    <select id="show_post" resultType="com.chuhelan.dotchat.beans.PostInfo">
+        select *
+        from dotchat_post
+        where post_id = #{post_id}
+    </select>
+
+    <!-- —————————————————————————————————————————————————————————————————————— -->
+
+    <insert id="insert_comment">
+        INSERT INTO dotchat_comment(comment_post_id, comment_author_name, comment_author_profileurl, comment_content,
+                                    comment_parent)
+        VALUES (#{user_id},
+                (SELECT user_name FROM dotchat_user_info WHERE user_id = #{user_id}),
+                (SELECT user_profile FROM dotchat_user_info WHERE user_id = #{user_id}),
+                #{context},
+                #{post_id})
+    </insert>
+
+    <update id="add_comment_count">
+        update dotchat_post
+        set post_comments_count = post_comments_count + 1
+        where post_id = #{post_id}
+    </update>
+
+    <update id="post_like_count_plus_one">
+        update dotchat_post
+        set post_likes_count = post_likes_count + 1
+        where post_id = #{post_id}
+    </update>
+
+    <update id="post_like_count_minus_one">
+        update dotchat_post
+        set post_likes_count = post_likes_count - 1
+        where post_id = #{post_id}
+    </update>
+
+    <update id="update_comment_count_minus_one">
+        update dotchat_post
+        set post_comments_count = post_comments_count - 1
+        where post_id = (select comment_parent from dotchat_comment where comment_id = #{comment_id})
+    </update>
+
+    <select id="get_comment" resultType="com.chuhelan.dotchat.beans.Comment">
+        select *
+        from dotchat_comment
+        where comment_parent = #{post_id}
+        order by comment_id
+    </select>
+
+    <select id="get_fist_comment" resultType="com.chuhelan.dotchat.beans.Comment">
+        select *
+        from dotchat_comment
+        where comment_parent = #{post_id}
+        order by comment_id
+        limit 0,1
+    </select>
+
+    <select id="find_post_author_id_by_comment_id" resultType="java.lang.Integer">
+        SELECT post_author AS 'post_author'
+        FROM dotchat_post
+        WHERE post_id = (SELECT comment_parent FROM dotchat_comment WHERE comment_id = #{comment_id})
+    </select>
+
+    <select id="find_comment_author_id_by_comment_id" resultType="java.lang.Integer">
+        select comment_post_id AS 'comment_author'
+        from dotchat_comment
+        where comment_id = #{comment_id}
+    </select>
+
 </mapper>

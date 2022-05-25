@@ -21,7 +21,11 @@ public interface UserService {
 
     String login_user_by_mail(String user_email, String user_password);
 
+    String login_user_by_phone(String user_phone, String user_password);
+
     User get_user_by_mail(String user_email);
+
+    User get_user_by_phone(String user_phone);
 
     User get_user_by_id(int id);
 
@@ -35,11 +39,20 @@ public interface UserService {
 
     UserInfo[] select_latest_userinfo_not_in_cookie_userid(int user_id);
 
-    String do_follow_and_count_plus(int user_id,int follow_id);
+    String do_follow_and_count_plus(int user_id, int follow_id);
 
     UserInfo[] select_all_follows(int user_id);
 
     UserInfo[] select_all_followers(int user_id);
 
     User select_user_email_and_user_name_by_userid(int user_id);
+
+    //取消关注
+    String cancel_follow_by_user_id(int mine_id, int its_id);
+
+    UserInfo[] search_user_name_by_key_words(String wd);
+
+    UserInfo[] get_all_follows_by_user_id(int user_id);
+
+    UserInfo[] get_all_followers_by_user_id(int user_id);
 }

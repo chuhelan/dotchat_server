@@ -9,9 +9,61 @@
     <title>dotchat|主页</title>
 </head>
 
-<script src="../js/basic_function.js"></script>
-<script src="../js/home_index.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+<script src="/js/alpine.min.js" defer></script>
+<script src="/js/clipboard.min.js"></script>
+
+<style>
+    .close-btn {
+        color: rgb(156 163 175 / var(--tw-text-opacity));
+        background: rgb(243 244 246 / var(--tw-bg-opacity));
+        padding: 7px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        align-self: center;
+        transition: opacity .3s;
+        cursor: pointer;
+    }
+    .close-btn:hover {
+        opacity: 0.5;
+    }
+
+    .pop-body {
+        transition: opacity .3s;
+        display: none;
+        position: absolute;
+        background-color: rgb(243 244 246 / 0.6);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+    }
+    .pop-body > div {
+        width: 40%;
+        padding: 20px;
+        min-height: 30vh;
+        max-height: 80vh;
+        margin-left: 50%;
+        margin-top: 10vh;
+        transform: translate(-50%);
+        overflow-y: scroll;
+    }
+
+    .search-div {
+        position: absolute;
+        min-height: 30px;
+        max-height: 30vh;
+        top: 70px;
+        width: 120%;
+        left: -10%;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform .3s;
+        overflow-y: scroll;
+        z-index: 1;
+    }
+</style>
 
 <body>
 
@@ -64,7 +116,8 @@
             <!-- search bar -->
             <!-- <div class="hidden sm:block flex-shrink flex-grow-0 justify-start px-2"> -->
             <div class="relative hidden sm:block flex-shrink flex-grow-0">
-                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full"
+                <div class="bg-white shadow rounded-lg mb-6 search-div"></div>
+                <input type="text" class="bg-purple-white bg-gray-100 rounded-lg border-0 p-3 w-full" oninput="loadSearch(this)"
                     placeholder="试着找点什么..." style="min-width:400px;">
                 <div class="absolute top-0 right-0 p-4 pr-3 text-purple-lighter">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -160,11 +213,11 @@
                             <p id="post_count" class="text-black">102</p>
                             <span class="text-gray-400">帖子</span>
                         </div>
-                        <div class="font-semibold text-center mx-4">
+                        <div class="font-semibold text-center mx-4" style="cursor: pointer;" onclick="loadFollowers(window.id)">
                             <p id="followers_count" class="text-black">102</p>
                             <span class="text-gray-400">粉丝</span>
                         </div>
-                        <div class="font-semibold text-center mx-4">
+                        <div class="font-semibold text-center mx-4" style="cursor: pointer;" onclick="loadFollows(window.id)">
                             <p id="follows_count" class="text-black">102</p>
                             <span class="text-gray-400">关注</span>
                         </div>
@@ -173,179 +226,14 @@
 
                 <div class="bg-white shadow mt-6  rounded-lg p-6">
                     <h3 class="text-gray-600 text-sm font-semibold mb-4">正在关注</h3>
-                    <ul class="flex items-center justify-center space-x-2">
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638612913771-8f00622b96fb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Sage
-                            </span>
-                        </li>
-
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638649602320-450b717fa622?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Jett
-                            </span>
-                        </li>
-
-                        <!-- Story #2 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638708644743-2502f38000a0?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Sky
-                            </span>
-                        </li>
-
-                        <!-- Story #3 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638691899851-0e955bceba1f?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Olivia
-                            </span>
-                        </li>
-
-                        <!-- Story #4 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638612913771-8f00622b96fb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Julia
-                            </span>
-                        </li>
-                        <!-- Story #1 -->
-                        <li class="flex flex-col items-center space-y-2">
-                            <!-- Ring -->
-                            <a class="block bg-white p-1 rounded-full" href="#">
-                                <!-- Thumbnail -->
-                                <img class="w-16 rounded-full"
-                                    src="https://images.unsplash.com/photo-1638649602320-450b717fa622?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=200&amp;h=200&amp;q=80">
-                            </a>
-
-
-                            <!-- Username -->
-                            <span class="text-xs text-gray-500">
-                                Hendrick
-                            </span>
-                        </li>
-
-                    </ul>
+                    <ul class="flex items-center justify-center space-x-2" id="follows_list"></ul>
                 </div>
 
 
                 <!-- 这边打算写推荐关注的用户 推荐关注的用户就按最新注册的5个用户好了 -->
 
-                <div class="bg-white shadow mt-6  rounded-lg p-6">
+                <div class="bg-white shadow mt-6  rounded-lg p-6" id="rec_list">
                     <h3 class="text-gray-600 text-sm font-semibold mb-4">你可能感兴趣</h3>
-
-                    <div class="flex justify-between px-2 py-3 mx-3">
-                        <div class="flex">
-                            <div class="w-auto h-auto rounded-full border-2 border-green-500">
-                                <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
-                                    src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-                            </div>
-                            <div class="flex flex-col  mb-2 ml-4 mt-1">
-                                <div class="text-gray-600 text-sm font-semibold">rem_name</div>
-                                <div class="flex w-full mt-1">
-                                    <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                                        his_location
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            class="justify-self-end inline-flex p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
-                            <span
-                                class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                关注我
-                            </span>
-                        </button>
-                    </div>
-
-                    <div class="flex justify-between px-2 py-3 mx-3">
-                        <div class="flex">
-                            <div class="w-auto h-auto rounded-full border-2 border-green-500">
-                                <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
-                                    src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-                            </div>
-                            <div class="flex flex-col  mb-2 ml-4 mt-1">
-                                <div class="text-gray-600 text-sm font-semibold">rem_name</div>
-                                <div class="flex w-full mt-1">
-                                    <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                                        his_location
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            class="justify-self-end inline-flex p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
-                            <span
-                                class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                关注我
-                            </span>
-                        </button>
-                    </div>
-
-                    <div class="flex justify-between px-2 py-3 mx-3">
-                        <div class="flex">
-                            <div class="w-auto h-auto rounded-full border-2 border-green-500">
-                                <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
-                                    src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-                            </div>
-                            <div class="flex flex-col  mb-2 ml-4 mt-1">
-                                <div class="text-gray-600 text-sm font-semibold">rem_name</div>
-                                <div class="flex w-full mt-1">
-                                    <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                                        his_location
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            class="justify-self-end inline-flex p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
-                            <span
-                                class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                关注我
-                            </span>
-                        </button>
-                    </div>
-
                 </div>
                 <!-- 这边打算写推荐关注的用户 推荐关注的用户就按最新注册的5个用户好了 -->
 
@@ -386,249 +274,19 @@
                 </form>
                 <!-- 发送帖子 -->
 
-                <!-- 单个帖子div -->
-                <div class="bg-white shadow rounded-lg mb-6">
-
-                    <!-- 顶部帖子信息状态 需要获取 帖子发送者头像 帖子发送者昵称 帖子发送者未知 帖子发送者发送时间 -->
-                    <div class="flex flex-row px-2 py-3 mx-3">
-                        <div class="w-auto h-auto rounded-full border-2 border-green-500">
-                            <!-- 帖子发送者头像 -->
-                            <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
-                                src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-                        </div>
-                        <div class="flex flex-col mb-2 ml-4 mt-1">
-                            <!-- 帖子发送者昵称 -->
-                            <div class="text-gray-600 text-sm font-semibold">John Doe</div>
-                            <div class="flex w-full mt-1">
-                                <!-- 帖子发送者位置信息 -->
-                                <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                                    SEO
-                                </div>
-                                <!-- 帖子发送者发送时间 -->
-                                <div class="text-gray-400 font-thin text-xs">
-                                    • 30 seconds ago
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 顶部帖子信息状态 需要获取 帖子发送者头像 帖子发送者昵称 帖子发送者未知 帖子发送者发送时间 -->
-
-                    <!-- 这是一个分界线 -->
-                    <div class="border-b border-gray-100"></div>
-                    <!-- 这是一个分界线 -->
-
-                    <!-- 帖子正文部分 -->
-                    <div class="text-gray-400 font-medium text-sm mb-7 mt-6 mx-3 px-2">
-                        <!-- 帖子图像 -->
-                        <img class="rounded w-full" src="https://picsum.photos/536/354">
-                    </div>
-                    <!-- 帖子内容 -->
-                    <div class="text-gray-500 text-sm mb-6 mx-3 px-2">
-                        post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...
-                    </div>
-                    <!-- 帖子正文部分 -->
-
-                    <!-- 帖子互动部分 -->
-                    <div class="flex justify-start mb-4 border-t border-gray-100">
-                        <div class="flex w-full mt-1 pt-2 pl-5">
-                            <!-- 喜欢此帖子的按钮 -->
-                            <span class="transition ease-out duration-300 hover:bg-gray-50 bg-gray-100 h-8 px-2 py-2 mr-2
-                                text-center rounded-full text-gray-100 cursor-pointer">
-                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z">
-                                    </path>
-                                </svg>
-                            </span>
-                            <!-- 喜欢此帖子的按钮 -->
-
-                            <!-- 查找最新点赞的四个人 -->
-                            <img class="inline-block object-cover w-8 h-8 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png" alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png" alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png" alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png" alt="">
-                            <!-- 查找最新点赞的四个人 -->
-                        </div>
-
-                        <div class="flex justify-end w-full mt-1 pt-2 pr-5">
-                            <!-- 分享此帖子的按钮 -->
-                            <span
-                                class="transition ease-out duration-300 hover:bg-blue-50 bg-blue-100 w-8 h-8 px-2 py-2 text-center rounded-full text-blue-400 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" width="14px" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
-                                    </path>
-                                </svg>
-                            </span>
-                            <!-- 分享此帖子的按钮 -->
-                        </div>
-
-                    </div>
-                    <!-- 帖子互动部分 -->
-
-                    <!-- 帖子数据部分 -->
-                    <div class="flex w-full border-t border-gray-100">
-                        <div class="mt-3 mx-5 flex w-full text-xs">
-                            <div class="flex text-gray-700 font-normal rounded-md mb-2 mr-4 items-center">评论:
-                                <!-- 帖子评论数量 -->
-                                <div class="ml-1 text-gray-400 text-ms"> 30</div>
-                            </div>
-                        </div>
-                        <div class="mt-3 mx-5 w-full flex justify-end text-xs">
-                            <div class="flex text-gray-700  rounded-md mb-2 mr-4 items-center">喜欢:
-                                <!-- 帖子喜欢数量 -->
-                                <div class="ml-1 text-gray-400  text-ms"> 123</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 帖子数据部分 -->
-
-                    <!-- 帖子评论部分 需要评论者头像 评论者昵称 评论者评论内容 评论是哪条帖子下面的-->
-                    <div class="text-black p-4 antialiased flex">
-                        <!-- 评论者的头像 -->
-                        <img class="rounded-full h-8 w-8 mr-2 mt-1 "
-                            src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-                        <div>
-                            <div class="bg-gray-100 rounded-lg px-4 pt-2 pb-2.5">
-                                <!-- 评论者昵称 -->
-                                <div class="font-semibold text-sm leading-relaxed">comment_author_name</div>
-                                <!-- 评论者发布内容 -->
-                                <div class="text-xs leading-snug md:leading-normal">
-                                    正在加载comment_content正在加载comment_content正在加载comment_content正在加载comment_content正在加载comment_content正在加载comment_content
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 帖子评论部分 -->
-
-                    <!-- 自己发送评论页面 需要获取自己的id 自己的头像 自己发送评论属于的父亲 -->
-                    <div
-                        class="relative flex items-center self-center w-full max-w-xl p-4 overflow-hidden text-gray-600 focus-within:text-gray-400">
-                        <!-- 自己的头像 -->
-                        <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" alt="User avatar"
-                            src="https://image.chuhelan.com/i/2022/05/02/626fd89bac55f.png">
-
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-6">
-                            <!-- 点击此处发表评论 -->
-                            <button type="submit" class="p-1 focus:outline-none focus:shadow-none hover:text-blue-500">
-                                <svg class="w-6 h-6 transition ease-out duration-300 hover:text-blue-500 text-gray-400"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
-                            </button>
-                        </span>
-                        <!-- 这里键入评论内容 -->
-                        <input type="search"
-                            class="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-transparent appearance-none rounded-tg placeholder-gray-400"
-                            style="border-radius: 25px" placeholder="评论点啥吧..." autocomplete="off">
-                    </div>
-                    <!-- 自己发送评论页面 -->
+                <!-- 帖子显示区 -->
+                <div id="post-list">
 
                 </div>
-                <!-- 单个帖子 -->
-
-                <div class="bg-white shadow rounded-lg">
-                    <div class="flex flex-row px-2 py-3 mx-3">
-                        <div class="w-auto h-auto rounded-full border-2 border-green-500">
-                            <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
-                                src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=200&amp;q=200">
-                        </div>
-                        <div class="flex flex-col mb-2 ml-4 mt-1">
-                            <div class="text-gray-600 text-sm font-semibold">user_name</div>
-                            <div class="flex w-full mt-1">
-                                <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                                    user_location
-                                </div>
-                                <div class="text-gray-400 font-thin text-xs">
-                                    2022年5月11日18点43分
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border-b border-gray-100"></div>
-                    <div class="text-gray-400 font-medium text-sm mb-7 mt-6 mx-3 px-2">
-                        <img class="rounded w-full" src="https://picsum.photos/536/354">
-                    </div>
-                    <div class="text-gray-500 text-sm mb-6 mx-3 px-2">
-                        post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...post_content正在加载...
-                    </div>
-                    <div class="flex justify-start mb-4 border-t border-gray-100">
-                        <div class="flex w-full mt-1 pt-2 pl-5">
-                            <span class="transition ease-out duration-300 hover:bg-gray-50 bg-gray-100 h-8 px-2 py-2 mr-2
-                                text-center rounded-full text-gray-100 cursor-pointer">
-                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z">
-                                    </path>
-                                </svg>
-                            </span>
-                            <img class="inline-block object-cover w-8 h-8 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-                                alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-                                alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=634&amp;q=80"
-                                alt="">
-                            <img class="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2.25&amp;w=256&amp;h=256&amp;q=80"
-                                alt="">
-                        </div>
-                        <div class="flex justify-end w-full mt-1 pt-2 pr-5">
-                            <span
-                                class="transition ease-out duration-300 hover:bg-blue-50 bg-blue-100 w-8 h-8 px-2 py-2 text-center rounded-full text-blue-400 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" width="14px" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
-                                    </path>
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex w-full border-t border-gray-100">
-                        <div class="mt-3 mx-5 flex w-full text-xs">
-                            <div class="flex text-gray-700 font-normal rounded-md mb-2 mr-4 items-center">
-                                评论:<div class="ml-1 text-gray-400 text-ms"> 13</div>
-                            </div>
-                        </div>
-                        <div class="mt-3 mx-5 w-full flex justify-end text-xs">
-                            <div class="flex text-gray-700  rounded-md mb-2 mr-4 items-center">
-                                喜欢: <div class="ml-1 text-gray-400 text-ms"> 32</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="relative flex items-center self-center w-full max-w-xl p-4 overflow-hidden text-gray-600 focus-within:text-gray-400">
-                        <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" alt="User avatar"
-                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-6">
-                            <button type="submit" class="p-1 focus:outline-none focus:shadow-none hover:text-blue-500">
-                                <svg class="w-6 h-6 transition ease-out duration-300 hover:text-blue-500 text-gray-400"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
-                            </button>
-                        </span>
-                        <input type="search"
-                            class="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-transparent appearance-none rounded-tg placeholder-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:text-gray-900 focus:shadow-outline-blue"
-                            style="border-radius: 25px" placeholder="Post a comment..." autocomplete="off">
-                    </div>
-                </div>
+                
 
             </article>
 
         </main>
+
+        <div class="pop-body" id="pop-main">
+            <div class="bg-white shadow rounded-lg mb-6"></div>
+        </div>
 
         <!-- footer -->
 
@@ -778,6 +436,10 @@
         </footer>
 
     </div>
+
+<script src="../js/basic_function.js"></script>
+<script src="../js/home_index.js"></script>
+
 </body>
 
 </html>

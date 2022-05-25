@@ -14,6 +14,14 @@
         values (#{user_name}, #{user_phonenumber}, #{user_email}, #{user_password})
     </insert>
 
+    <delete id="cancel_follow_by_user_id">
+        DELETE
+        FROM dotchat_follow
+        WHERE user_id = #{mine_id}
+          AND follow_id = #{its_id}
+    </delete>
+
+
     <select id="select_user_by_email_and_password" resultType="com.chuhelan.dotchat.beans.User">
         select *
         from dotchat_user
@@ -26,6 +34,14 @@
         from dotchat_user
         where user_email = (#{user_email})
     </select>
+
+
+    <select id="get_user_by_phone" resultType="com.chuhelan.dotchat.beans.User">
+        select *
+        from dotchat_user
+        where user_phonenumber = (#{user_phone})
+    </select>
+
 
     <select id="get_user_by_id" resultType="com.chuhelan.dotchat.beans.User">
         select *
@@ -49,6 +65,7 @@
         select *
         from dotchat_user_info
         where user_id not in (#{user_id})
+          AND user_id NOT IN (SELECT follow_id FROM dotchat_follow WHERE user_id = #{user_id})
         order by user_id desc
         limit 3
     </select>
@@ -68,6 +85,26 @@
         SELECT user_name, user_email
         FROM dotchat_user
         WHERE user_id = (#{user_id})
+    </select>
+
+    <select id="search_user_name_by_key_words" resultType="com.chuhelan.dotchat.beans.UserInfo">
+        SELECT *
+        FROM dotchat_user_info
+        WHERE user_name LIKE concat('%', #{wd}, '%')
+    </select>
+
+    <!-- follows 关注者-->
+    <select id="get_all_follows_by_user_id" resultType="com.chuhelan.dotchat.beans.UserInfo">
+        SELECT *
+        FROM dotchat_user_info
+        WHERE user_id = ANY (SELECT follow_id AS '关注的人' FROM dotchat_follow WHERE user_id = #{user_id})
+    </select>
+
+    <!-- followers 粉丝 -->
+    <select id="get_all_followers_by_user_id" resultType="com.chuhelan.dotchat.beans.UserInfo">
+        SELECT *
+        FROM dotchat_user_info
+        WHERE user_id = ANY (SELECT user_id AS '粉丝' FROM dotchat_follow WHERE follow_id = #{user_id})
     </select>
 
     <update id="save_user_token_by_id">

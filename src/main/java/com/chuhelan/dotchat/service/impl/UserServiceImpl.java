@@ -115,6 +115,31 @@ public class UserServiceImpl implements UserService {
         return userDao.select_user_email_and_user_name_by_userid(user_id);
     }
 
+
+    //取消关注 关注者count-1 被取消的人 粉丝数量-1
+    @Override
+    public String cancel_follow_by_user_id(int mine_id, int its_id) {
+        userDao.cancel_follow_by_user_id(mine_id, its_id);
+        userCountDao.user_follows_count_minus_1(mine_id);
+        userCountDao.user_followers_count_minus_1(its_id);
+        return "200";
+    }
+
+    @Override
+    public UserInfo[] search_user_name_by_key_words(String wd) {
+        return userDao.search_user_name_by_key_words(wd);
+    }
+
+    @Override
+    public UserInfo[] get_all_follows_by_user_id(int user_id) {
+        return userDao.get_all_follows_by_user_id(user_id);
+    }
+
+    @Override
+    public UserInfo[] get_all_followers_by_user_id(int user_id) {
+        return userDao.get_all_followers_by_user_id(user_id);
+    }
+
     @Override
     public String login_user_by_mail(String user_email, String user_password) {
         // 获取用户信息
@@ -138,12 +163,41 @@ public class UserServiceImpl implements UserService {
         } else {
             return "302";     // 账户或密码错误
         }
+    }
 
+    @Override
+    public String login_user_by_phone(String user_phone, String user_password) {
+        // 获取用户信息
+        User info = userDao.get_user_by_phone(user_phone);
+        if (info == null) return "404";        // 账户或密码不存在
+        // 验证用户密码
+        if (info.getUser_password().equals(user_password)) {
+            // 创建 token
+            String uuid = UUID.randomUUID().toString();
+            uuid = uuid.replace("-", "");
+            // 写入数据库
+            Date date = new Date();
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            calendar.add(Calendar.DATE, 5);
+            date = calendar.getTime();
+            userDao.save_user_token_by_id(info.getUser_id(), uuid);
+            userDao.save_user_token_die_time_by_id(info.getUser_id(), date);
+            // 返回 token
+            return uuid;
+        } else {
+            return "302";     // 账户或密码错误
+        }
     }
 
     @Override
     public User get_user_by_mail(String user_email) {
         return userDao.get_user_by_mail(user_email);
+    }
+
+    @Override
+    public User get_user_by_phone(String user_phone) {
+        return userDao.get_user_by_phone(user_phone);
     }
 
     @Override

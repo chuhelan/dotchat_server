@@ -1,45 +1,84 @@
 let id = -1
-let cookie = ''
-const cookies = document.cookie
-const cookie_list = cookies.split(";")
-let save = ""
-cookie_list.forEach(function (element) {
-    if (element.trim().substring(0, 2) === 'id' || element.trim().substring(0, 5) === 'token') {
-        save += element + "&"
-    }
-})
-save = save.substring(0, save.length - 1)
-save = save.split(" ").join("")     // 去除空格
-console.log('save：' + save)
-if (save.indexOf('&') > 0) {
-    if (save.split('&')[0].split('=')[0].trim() === 'id') {
-        id = save.split('&')[0].split('=')[1]
-        cookie = save.split('&')[1].split('=')[1]
-    } else {
-        id = save.split('&')[1].split('=')[1]
-        cookie = save.split('&')[0].split('=')[1]
-    }
-}
-console.log("id=" + id)
+let pageid = -1
+let token = ""
+let id_from_url = false     // 用于后续判定是否为他人页面
 
+// 获取登录信息
+id = getCookie("id")
+token = getCookie("token")
+console.log("id=" + id)
+// 尝试从 url 中获取 id
+const get_id = getQueryVariable("id")
+if(get_id != false) {
+    pageid = get_id
+    console.log("pageid(url)=" + pageid)
+    id_from_url = true
+} else {
+    // 尝试从 cookie 内获取 id
+    pageid = getCookie("id")
+    console.log("pageid(cookie)=" + pageid)
+}
+
+// 处理显示关注按钮还是修改资料按钮
+if(id !== pageid) {
+    // 隐藏修改资料按钮
+    var edit_button = document.getElementById("edit_button")
+    edit_button.remove()
+} else {
+    // 隐藏关注按钮
+    var follow_button = document.getElementById("follow_button")
+    follow_button.remove()
+}
+// 处理此人是否已经被关注
+fetch("/get_follows?user_id=" + id)
+.then(Response => Response.json())
+.then(data => {
+    console.log(data)
+    data.forEach(item => {
+        console.log(item.user_id + "/" + pageid)
+        if(Number(item.user_id) == Number(pageid)) {
+            // 禁用关注按钮
+            document.getElementById("follow_button").onclick = function() { cancelFollow() }
+            document.getElementById("follow_button_text").innerText = "取消关注"
+        }
+    })
+})
 
 let current_user_name
 let current_user_id
 set_userinfo()
 set_user_count()
 
+// 生成二维码
+new QRCode(document.getElementById("qrcode"), id_from_url ? document.URL : (document.URL + "?id=" + id));
+// 显示二维码的鼠标悬停操作
+function showQRCode(isshow) {
+    const div = document.getElementById("qrcode")
+    if(isshow) {
+        div.style.display = "block"
+        setTimeout(() => {
+            div.style.opacity = "1"
+        }, 100)
+    } else {
+        div.style.opacity = "0"
+        setTimeout(() => {
+            div.style.display = "none"
+        }, 3000)
+    }
+ }
 // 该页面需要获取的用户信息有
 // 顶层image的url 资料页面的imageurl 用户昵称 用户未知信息
 function set_userinfo() {
-    fetch("/info?id=" + id)
+    fetch("/info?id=" + pageid)
         .then(Response => Response.json())
         .then(data => {
+            if(data.user_name === undefined) {
+                window.location.href = "/404.html"
+            }
             console.log(data)
             console.log("username=" + data.user_name + "usergender=" + data.user_gender + "userlocation=" + data.user_location)
 
-            var nav_image = document.getElementById("nav_image")
             var profile = document.getElementById("user_image")
-            nav_image.src = data.user_profile
             profile.src = data.user_profile
 
             var name = document.getElementById("user_name")
@@ -50,13 +89,25 @@ function set_userinfo() {
             location.innerHTML = data.user_location
 
             console.log("设置成功！")
-
-            set_follow_or_edit()
-        }).catch(console.error)
+        })
+        .catch(err => {
+            console.log(err)
+            window.location.href = "/404.html"
+        })
+        fetch("/info?id=" + id)
+        .then(Response => Response.json())
+        .then(data => {
+            var nav_image = document.getElementById("nav_image")
+            nav_image.src = data.user_profile
+        })
+        .catch(err => {
+            console.log(err)
+            window.location.href = "/404.html"
+        })
 }
 
 function set_user_count() {
-    fetch("/show_user_count?user_id=" + id)
+    fetch("/show_user_count?user_id=" + pageid)
         .then(Response => Response.json())
         .then(data => {
             var user_post_count = document.getElementById("post_count")
@@ -69,38 +120,160 @@ function set_user_count() {
 
             console.log("count信息设置成功！")
         }).catch(console.error)
+} 
+
+// 关注
+function followUser() {
+    if(id !== pageid) {
+        fetch("/follow?user_id=" + id + "&follow_id=" + pageid)
+        .finally(() => {
+            // 刷新页面
+            window.location.reload()
+        })
+    }
 }
 
-// 判断该页面cookie的id是否和用户昵称id是否一致
-// 通过用户昵称查找用户id 如相等 隐藏关注按钮 显示修改资料， 如果不相等 隐藏修改资料 显示关注按钮
-function set_follow_or_edit() {
-    current_user_name = document.getElementById("user_name").value
-    console.log("获取到的current_name为：" + current_user_name)
-    fetch("/find_id?user_name=" + current_user_name)
+// 取消关注
+function cancelFollow() {
+    if(id !== pageid) {
+        fetch("/cancel_follow?mine_id=" + id + "&its_id=" + pageid)
+        .finally(() => {
+            // 刷新页面
+            window.location.reload()
+        })
+    }
+}
+
+// 加载关注者列表
+get_my_follows(document.getElementById("follows_list"), pageid)
+
+// 加载第一部分文章
+window.nowPage = 0
+fetch("/show_post/0?post_author=" + pageid)
+    .then(Response => Response.json())
+    .then(data => {
+        console.log("get_post: ")
+        console.log(data)
+        if (data.length > 0) {
+            for(let i=0; i<data.length; i++) {
+                let times = 0
+                createPostBody(data[i], times)
+                times ++
+            }
+        } else {
+            const div = document.createElement("div")
+            div.classList = "shadow bg-white mt-6 p-6 rounded-lg"
+            div.innerText = "什么都没有"
+            div.style.textAlign = "center"
+            document.getElementById("post-list").appendChild(div)
+        }
+        window.fistLoding = true
+    })
+
+// 页面滚动事件
+window.onscroll = function () {
+    if (getScrollTop() + getWindowHeight() == getScrollHeight() && window.nowPage != -1 && window.fistLoding == true) {
+        // 页面滚到里底部，加载下一页
+        window.nowPage ++
+        console.log("现在加载的分页：" + nowPage)
+        // 显示加载提醒
+        const div = document.createElement("div")
+        div.id = "post-loader"
+        div.classList = "shadow bg-white mt-6 p-6 rounded-lg"
+        div.innerText = "加载中"
+        div.style.textAlign = "center"
+        div.style.transition = "opacity .3s"
+        document.getElementById("post-list").appendChild(div)
+        fetch("/show_post/" + window.nowPage + "?post_author=" + pageid)
         .then(Response => Response.json())
         .then(data => {
+           console.log("get_post: ")
             console.log(data)
-            current_user_id = data.user_id
-            console.log("当前浏览页面上的id为：" + current_user_id)
-            console.log("读取到cookie中的id为：" + id)
-            if (id == current_user_id) {
-                // 隐藏关注按钮
-                var follow_button = document.getElementById("follow_button")
-                follow_button.remove()
-            }
-            else if (id != current_user_id) {
-                // 隐藏修改资料按钮
-                var edit_button = document.getElementById("edit_button")
-                edit_button.remove()
+            if(data.length > 0) {
+                for(let i=0; i<data.length; i++) {
+                    let times = 0
+                    createPostBody(data[i], times)
+                    times ++
+                }
+                // 不足五条说明是最后一页了，下次就不用加载了
+                if(data.length < 5) {
+                    window.nowPage = -1
+                }
             } else {
-                alert("你为什么会看到这个消息？你把我整不会了，你不应该看到的啊？？？请速度联系我！关键字：current_user_id error")
+                window.nowPage = -1
             }
-        }).catch(console.error)
+        })
+        .finally(() => {
+            // 移除加载提醒
+            document.getElementById("post-loader").opacity = "0"
+            setTimeout(() => {
+                document.getElementById("post-loader").parentNode.removeChild(document.getElementById("post-loader"))
+            }, 300)
+        })
+    }
 }
 
+// ---------------------------------------
 
-// 获取帖子粉丝关注列表数量 并且设置
+// 获取 URL 内的参数
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
 
+// 获取 Cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
+function getScrollTop() {
+    var scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
+    if (document.body) {
+        bodyScrollTop = document.body.scrollTop;
+    }
+    if (document.documentElement) {
+        documentScrollTop = document.documentElement.scrollTop;
+    }
+    scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
+    return scrollTop;
+}
 
-// 获取用户关注列表
+//文档的总高度
+function getScrollHeight() {
+    var scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+    if (document.body) {
+        bodyScrollHeight = document.body.scrollHeight;
+    }
+    if (document.documentElement) {
+        documentScrollHeight = document.documentElement.scrollHeight;
+    }
+    scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
+    return scrollHeight;
+}
+
+function getWindowHeight() {
+    var windowHeight = 0;
+    if (document.compatMode == "CSS1Compat") {
+        windowHeight = document.documentElement.clientHeight;
+    } else {
+        windowHeight = document.body.clientHeight;
+    }
+    return windowHeight;
+}

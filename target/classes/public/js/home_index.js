@@ -1,5 +1,5 @@
 // 验证登录
-let id = -1
+window.id = -1
 let cookie = ''
 const cookies = document.cookie
 const cookie_list = cookies.split(";")
@@ -47,6 +47,50 @@ let current_user_name
 let current_user_id
 set_userinfo()
 set_user_count()
+        
+
+// 页面滚动事件
+window.onscroll = function () {
+    if (getScrollTop() + getWindowHeight() == getScrollHeight() && window.nowPage != -1 && window.fistLoding == true) {
+        // 页面滚到里底部，加载下一页
+        window.nowPage ++
+        console.log("现在加载的分页：" + nowPage)
+        // 显示加载提醒
+        const div = document.createElement("div")
+        div.id = "post-loader"
+        div.classList = "shadow bg-white mt-6 p-6 rounded-lg"
+        div.innerText = "加载中"
+        div.style.textAlign = "center"
+        div.style.transition = "opacity .3s"
+        document.getElementById("post-list").appendChild(div)
+        fetch("/show_post/" + window.nowPage)
+        .then(Response => Response.json())
+        .then(data => {
+           console.log("get_post: ")
+            console.log(data)
+            if(data.length > 0) {
+                for(let i=0; i<data.length; i++) {
+                    let times = 0
+                    createPostBody(data[i], times, true)
+                    times ++
+                }
+                // 不足五条说明是最后一页了，下次就不用加载了
+                if(data.length < 5) {
+                    window.nowPage = -1
+                }
+            } else {
+                window.nowPage = -1
+            }
+        })
+        .finally(() => {
+            // 移除加载提醒
+            document.getElementById("post-loader").opacity = "0"
+            setTimeout(() => {
+                document.getElementById("post-loader").parentNode.removeChild(document.getElementById("post-loader"))
+            }, 300)
+        })
+    }
+}
 
 // 该页面需要获取的用户信息有
 // 顶层image的url 资料页面的imageurl 用户昵称 用户未知信息
@@ -54,9 +98,7 @@ function set_userinfo() {
     fetch("/info?id=" + id)
         .then(Response => Response.json())
         .then(data => {
-            console.log(data)
-            console.log("|userprofile=" + data.user_profile + "|username=" + data.user_name + "|usergender=" + data.user_gender + "|userlocation=" + data.user_location)
-
+            window.loginInfo = data
             var nav_image = document.getElementById("nav_image")
             var profile = document.getElementById("user_image")
             nav_image.src = data.user_profile
@@ -70,6 +112,30 @@ function set_userinfo() {
             location.innerHTML = data.user_location
 
             console.log("设置成功！")
+
+            // 加载第一页帖子
+            window.nowPage = 0
+            fetch("/show_post/0")
+                .then(Response => Response.json())
+                .then(data => {
+                    console.log("get_post: ")
+                    console.log(data)
+                    if (data.length > 0) {
+                        for (let i = 0; i < data.length; i++) {
+                            let times = 0
+                            createPostBody(data[i], times, true)
+                            times ++
+                        }
+                    } else {
+                        const div = document.createElement("div")
+                        div.classList = "shadow bg-white mt-6 p-6 rounded-lg"
+                        div.innerText = "什么都没有"
+                        div.style.textAlign = "center"
+                        document.getElementById("post-list").appendChild(div)
+                    }
+                    window.fistLoding = true
+                })
+
         }).catch(console.error)
 }
 
@@ -111,7 +177,6 @@ function post_by_post_author() {
 
 //发送帖子的同时呢 把该用户下的 count 帖子 +1 
 function post_plus_by_user_id() {
-    var user_id = id
     fetch("/post_plus?user_id=" + id)
         .then(Response => Response.json())
         .then(data => {
@@ -212,12 +277,6 @@ function show_all_follows() {
         .then(Response => Response.json())
         .then(data => {
             console.log(data)
-            // data.forEach(item => {
-            //     console.log(item.user_id)
-            //     console.log(item.user_name)
-            //     console.log(item.user_profile)
-            // }
-
             for (let i = 0; i < 6; i++) {
                 console.log(data[i].user_id)
                 console.log(data[i].user_name)
@@ -225,4 +284,89 @@ function show_all_follows() {
             }
         })
 
+}
+
+// 加载关注者列表
+get_my_follows(document.getElementById("follows_list"), id)
+
+// 加载推荐
+fetch("/latest_userinfo?user_id=" + id)
+.then(Response => Response.json())
+.then(data => {
+    data.forEach(item => {
+        const div = document.createElement("div")
+        div.className = "flex justify-between px-2 py-3 mx-3"
+        div.innerHTML = `<div class="flex">
+        <div class="w-auto h-auto rounded-full border-2 border-green-500" onclick="window.location.href = '/accounts/index.html?id=' + ${item.user_id}">
+            <img class="w-12 h-12 object-cover rounded-full shadow cursor-pointer" alt="User avatar"
+                src="${item.user_profile}">
+        </div>
+        <div class="flex flex-col  mb-2 ml-4 mt-1">
+            <div class="text-gray-600 text-sm font-semibold">${item.user_name}</div>
+            <div class="flex w-full mt-1">
+                <div class="text-blue-700 font-base text-xs mr-1 cursor-pointer">
+                    ${item.user_location}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="followUser(${item.user_id})"
+        class="justify-self-end inline-flex p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
+        <span
+            class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            关注我
+        </span>
+    </button>`
+    document.getElementById("rec_list").appendChild(div)
+    })
+})
+
+// 关注
+function followUser(followid) {
+    if(id !== followid) {
+        fetch("/follow?user_id=" + id + "&follow_id=" + followid)
+        .finally(() => {
+            // 刷新页面
+            window.location.reload()
+        })
+    }
+}
+
+// -----------------------------------------
+
+
+function getScrollTop() {
+    var scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
+    if (document.body) {
+        bodyScrollTop = document.body.scrollTop;
+    }
+    if (document.documentElement) {
+        documentScrollTop = document.documentElement.scrollTop;
+    }
+    scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
+    return scrollTop;
+}
+
+//文档的总高度
+function getScrollHeight() {
+    var scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+    if (document.body) {
+        bodyScrollHeight = document.body.scrollHeight;
+    }
+    if (document.documentElement) {
+        documentScrollHeight = document.documentElement.scrollHeight;
+    }
+    scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
+    return scrollHeight;
+}
+
+function getWindowHeight() {
+    var windowHeight = 0;
+    if (document.compatMode == "CSS1Compat") {
+        windowHeight = document.documentElement.clientHeight;
+    } else {
+        windowHeight = document.body.clientHeight;
+    }
+    return windowHeight;
 }

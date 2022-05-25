@@ -20,7 +20,7 @@ public class PostInfo {
     private String post_comment_status;
     private String post_url;
     private String post_image_url;
-    private int post_comment_count;
+    private int post_comments_count;
     private int post_views_count;
     private int post_likes_count;
 }
